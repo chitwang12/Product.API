@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Product.API.Data;
 using Product.API.Models;
 using System;
@@ -12,36 +13,73 @@ namespace Product.API.Repository
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
-        public ProductRepository(ApplicationDbContext context,IMapper mapper)
+        public ProductRepository(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
         }
-        public async Task<ProductModel> searchProductById(int Id)
+        public async Task<List<ProductModel>> GetAllProductsAsync()
         {
-            var records = await _context.Products.FindAsync(Id).Select(x => new ProductModel()
+            //Convert ProductModel Data to Products(Manuualy) Best approach is to use AutoMapper
+            var records = await _context.Products.Select(x => new ProductModel
             {
                 Id = x.Id,
-            Price = x.Products.Price,
-            Name = x.Name,
-            Description = x.Description,
-            image_name = x,image_name,
-            Rating = x.Rating,
-            no_of_Units = x.no_of_units;
-        }).FirstOrDefaultAsync();
-return records;
+                Price = x.Price,
+                Name = x.Name,
+                Description = x.Description,
+                Image_Name = x.Image_Name,
+                Rating = x.Rating,
+                No_Of_Units = x.No_Of_Units
 
+            }).ToListAsync();
+            return records;
+
+        }
+        public async Task<ProductModel> GetProductByIdAsync(int ProductId)
+        {
+            //Convert ProductModel Data to Products(Manuualy) Best approach is to use AutoMapper
+            var records = await _context.Products.Where(x => x.Id == ProductId).Select(x => new ProductModel
+            {
+                Id = x.Id,
+                Price = x.Price,
+                Name = x.Name,
+                Description = x.Description,
+                Image_Name = x.Image_Name,
+                Rating = x.Rating,
+                No_Of_Units = x.No_Of_Units
+
+            }).FirstOrDefaultAsync();
+            return records;
+
+        }
+
+        public async Task<ProductModel> GetProductByNameAsync(string ProductName)
+        {
+            //Convert ProductModel Data to Products(Manuualy) Best approach is to use AutoMapper
+            var records = await _context.Products.Where(x => x.Name == ProductName).Select(x => new ProductModel
+            {
+                Id = x.Id,
+                Price = x.Price,
+                Name = x.Name,
+                Description = x.Description,
+                Image_Name = x.Image_Name,
+                Rating = x.Rating,
+                No_Of_Units = x.No_Of_Units
+
+            }).FirstOrDefaultAsync();
+            return records;
+
+        }
+        public async Task<int> addProductRating(ProductModel productmodel)
+        {
+            var product = new Products()
+            {
+                Id = productmodel.Id,
+                Rating =productmodel.Rating
+            };
+            _context.Products.Add(product);
+           await  _context.SaveChangesAsync();
+            return product.Id;
+        }
+    }
 }
-}
-}/*
-public async Task<BookModel> GetBookIdAsync(int bookId)
-{
-    //var records = await _context.Books.FindAsync(bookId).Select(x => new BookModel()
-    //{
-    //    Id = x.Id,
-    //    Title = x.Title,
-    //    Description = x.Description
-    //}).FirstOrDefaultAsync();
-    //return records;
-    var book = await _context.Books.FindAsync(bookId);
-    return _mapper.Map<BookModel>(book);

@@ -12,15 +12,20 @@ namespace Product.API.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-       // List<ProductModel> ProductsSample = new List<ProductModel>();
+        // List<ProductModel> ProductsSample = new List<ProductModel>();
 
-  
-         //teen method 
+
+        //teen method 
         /*
          * searchProductById --- GET
          * searchProductByName----GET
          * addProductRating----POST
          */
-
+        [HttpPost]
+        public async Task<IActionResult> addProductRating([FromRoute] ProductModel productModel)
+        {
+            var id = await _productRepository.AddProductAsync(productModel);
+            return CreatedAtAction(nameof(searchProductById), new { id = id, controller = "Products" }, id);
+        }
     }
 }
