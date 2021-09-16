@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace Product.API.Helpers
 {
-    public class DataMapper :Profile
+    public class ProductMappings :Profile
     {
-        public DataMapper()
+        public ProductMappings()
         {
-            //CreateMap<Products, ProductModel>().ReverseMap();
+            CreateMap<Product,ProductModel>
+            
         }
     }
 }
